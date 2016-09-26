@@ -12,6 +12,7 @@ from ..helpers import (
 )
 from ...fixtures.course import CourseFixture, XBlockFixtureDesc
 from lettuce import world, step
+from nose.plugins.attrib import attr
 from ...pages.common.logout import LogoutPage
 from ...pages.lms.courseware import CoursewarePage
 from ...pages.lms.instructor_dashboard import InstructorDashboardPage, StudentSpecificAdmin
@@ -326,16 +327,16 @@ class SubsectionGradingPolicyTest(ProgressPageBaseTest):
             self._check_for_sr_text_in_chart()
 
 
-    @attr('a11y')
-    class ProgressPageA11yTest(ProgressPageBaseTest):
-        """
-        Class to test the accessibility of the progress page.
-        """
+@attr('a11y')
+class ProgressPageA11yTest(ProgressPageBaseTest):
+    """
+    Class to test the accessibility of the progress page.
+    """
 
-        def test_progress_page_a11y(self):
-            """
-            Test the accessibility of the progress page.
-            """
-            self.log_in_as_unique_user()
-            self.progress_page.visit()
-            self.progress_page.a11y_audit.check_for_accessibility_errors()
+    def test_progress_page_a11y(self):
+        """
+        Test the accessibility of the progress page.
+        """
+        self.log_in_as_unique_user()
+        self.progress_page.visit()
+        self.progress_page.a11y_audit.check_for_accessibility_errors()
