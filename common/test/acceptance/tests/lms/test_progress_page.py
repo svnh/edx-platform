@@ -11,7 +11,6 @@ from ..helpers import (
     UniqueCourseTest, auto_auth, create_multiple_choice_problem, create_multiple_choice_xml, get_modal_alert
 )
 from ...fixtures.course import CourseFixture, XBlockFixtureDesc
-from lettuce import world
 from nose.plugins.attrib import attr
 from ...pages.common.logout import LogoutPage
 from ...pages.lms.courseware import CoursewarePage
