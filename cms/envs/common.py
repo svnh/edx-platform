@@ -226,6 +226,7 @@ SOCIAL_SHARING_SETTINGS = {
 PROJECT_ROOT = path(__file__).abspath().dirname().dirname()  # /edx-platform/cms
 REPO_ROOT = PROJECT_ROOT.dirname()
 COMMON_ROOT = REPO_ROOT / "common"
+OPENEDX_ROOT = REPO_ROOT / "openedx"
 CMS_ROOT = REPO_ROOT / "cms"
 LMS_ROOT = REPO_ROOT / "lms"
 ENV_ROOT = REPO_ROOT.dirname()  # virtualenv dir /edx-platform is in
@@ -249,8 +250,9 @@ MAKO_TEMPLATES = {}
 MAKO_TEMPLATES['main'] = [
     PROJECT_ROOT / 'templates',
     COMMON_ROOT / 'templates',
-    COMMON_ROOT / 'djangoapps' / 'pipeline_mako' / 'templates',
+    COMMON_ROOT / 'djangoapps' / 'pipeline_js' / 'templates',
     COMMON_ROOT / 'static',  # required to statically include common Underscore templates
+    OPENEDX_ROOT / 'core' / 'djangoapps' / 'pipeline_mako' / 'templates',
     CMS_ROOT / 'djangoapps' / 'pipeline_js' / 'templates',
 ]
 
@@ -837,7 +839,8 @@ INSTALLED_APPS = (
     # For asset pipelining
     'edxmako',
     'pipeline',
-    'static_replace',
+    'openedx.core.djangoapps.pipeline_mako',
+    'openedx.core.djangoapps.static_replace',
     'require',
 
     # Theming

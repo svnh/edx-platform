@@ -3,6 +3,7 @@ Declaration of CourseOverview model
 """
 import json
 import logging
+from pytz import utc
 from urlparse import urlparse, urlunparse
 
 from django.db import models, transaction
@@ -18,8 +19,7 @@ from opaque_keys.edx.keys import CourseKey
 from config_models.models import ConfigurationModel
 from lms.djangoapps import django_comment_client
 from openedx.core.djangoapps.models.course_details import CourseDetails
-from pytz import utc
-from static_replace.models import AssetBaseUrlConfig
+from openedx.core.djangoapps.static_replace.models import AssetBaseUrlConfig
 from util.date_utils import strftime_localized
 from xmodule import course_metadata_utils, block_metadata_utils
 from xmodule.course_module import CourseDescriptor, DEFAULT_START_DATE

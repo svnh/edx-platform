@@ -380,6 +380,7 @@ XQUEUE_WAITTIME_BETWEEN_REQUESTS = 5  # seconds
 PROJECT_ROOT = path(__file__).abspath().dirname().dirname()  # /edx-platform/lms
 REPO_ROOT = PROJECT_ROOT.dirname()
 COMMON_ROOT = REPO_ROOT / "common"
+OPENEDX_ROOT = REPO_ROOT / "openedx"
 ENV_ROOT = REPO_ROOT.dirname()  # virtualenv dir /edx-platform is in
 COURSES_ROOT = ENV_ROOT / "data"
 
@@ -460,10 +461,12 @@ OAUTH2_PROVIDER = {
 import tempfile
 MAKO_MODULE_DIR = os.path.join(tempfile.gettempdir(), 'mako_lms')
 MAKO_TEMPLATES = {}
-MAKO_TEMPLATES['main'] = [PROJECT_ROOT / 'templates',
-                          COMMON_ROOT / 'templates',
-                          COMMON_ROOT / 'lib' / 'capa' / 'capa' / 'templates',
-                          COMMON_ROOT / 'djangoapps' / 'pipeline_mako' / 'templates']
+MAKO_TEMPLATES['main'] = [
+    PROJECT_ROOT / 'templates',
+    COMMON_ROOT / 'templates',
+    COMMON_ROOT / 'lib' / 'capa' / 'capa' / 'templates',
+    OPENEDX_ROOT / 'core' / 'djangoapps' / 'pipeline_mako' / 'templates',
+]
 
 # Django templating
 TEMPLATES = [
@@ -476,8 +479,8 @@ TEMPLATES = [
             PROJECT_ROOT / "templates",
             COMMON_ROOT / 'templates',
             COMMON_ROOT / 'lib' / 'capa' / 'capa' / 'templates',
-            COMMON_ROOT / 'djangoapps' / 'pipeline_mako' / 'templates',
             COMMON_ROOT / 'static',  # required to statically include common Underscore templates
+            OPENEDX_ROOT / 'core' / 'djangoapps' / 'pipeline_mako' / 'templates',
         ],
         # Options specific to this backend.
         'OPTIONS': {
@@ -1889,7 +1892,8 @@ INSTALLED_APPS = (
     # For asset pipelining
     'edxmako',
     'pipeline',
-    'static_replace',
+    'openedx.core.djangoapps.pipeline_mako',
+    'openedx.core.djangoapps.static_replace',
 
     # For content serving
     'openedx.core.djangoapps.contentserver',
