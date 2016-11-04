@@ -14,8 +14,9 @@
  *  - edit_display_name - true if the shown xblock's display name should be in inline edit mode
  */
 define(['jquery', 'underscore', 'gettext', 'js/views/baseview', 'common/js/components/utils/view_utils',
-        'js/views/utils/xblock_utils', 'js/views/xblock_string_field_editor'],
-    function($, _, gettext, BaseView, ViewUtils, XBlockViewUtils, XBlockStringFieldEditor) {
+        'js/views/utils/xblock_utils', 'js/views/xblock_string_field_editor',
+        'edx-ui-toolkit/js/utils/string-utils', 'edx-ui-toolkit/js/utils/html-utils'],
+    function($, _, gettext, BaseView, ViewUtils, XBlockViewUtils, XBlockStringFieldEditor, StringUtils, HtmlUtils) {
         var XBlockOutlineView = BaseView.extend({
             // takes XBlockInfo as a model
 
@@ -68,7 +69,10 @@ define(['jquery', 'underscore', 'gettext', 'js/views/baseview', 'common/js/compo
                 if (this.parentInfo) {
                     this.setElement($(html));
                 } else {
-                    this.$el.html(html);
+                    HtmlUtils.setHtml(
+                        this.$el,
+                        HtmlUtils.HTML(html)
+                    );
                 }
             },
 
@@ -83,9 +87,13 @@ define(['jquery', 'underscore', 'gettext', 'js/views/baseview', 'common/js/compo
                     defaultNewChildName = null,
                     isCollapsed = this.shouldRenderChildren() && !this.shouldExpandChildren();
                 if (childInfo) {
-                    addChildName = interpolate(gettext('New %(component_type)s'), {
-                        component_type: childInfo.display_name
-                    }, true);
+                    addChildName = StringUtils.interpolate(
+                            gettext('New {component_type}'),
+                            {
+                                component_type: childInfo.display_name
+                            },
+                            true
+                        );
                     defaultNewChildName = childInfo.display_name;
                 }
                 /* globals course */
@@ -186,6 +194,7 @@ define(['jquery', 'underscore', 'gettext', 'js/views/baseview', 'common/js/compo
             addButtonActions: function(element) {
                 var self = this;
                 element.find('.delete-button').click(_.bind(this.handleDeleteEvent, this));
+                element.find('.duplicate-button').click(_.bind(this.handleDuplicateEvent, this));
                 element.find('.button-new').click(_.bind(this.handleAddEvent, this));
             },
 
@@ -289,6 +298,49 @@ define(['jquery', 'underscore', 'gettext', 'js/views/baseview', 'common/js/compo
                         parentView.onChildDeleted(self, event);
                     }
                 });
+            },
+
+            createPlaceholderElement: function(xblockElement) {
+                var $el = $('<li/>', {class: 'outline-item'});
+                return $el.insertAfter(xblockElement);
+            },
+
+            parentElement: function(xblockElement, category) {
+                var parentCategory;
+                if (category === 'unit') {
+                    parentCategory = 'subsection';
+                } else if (category === 'subsection') {
+                    parentCategory = 'section';
+                } else {
+                    parentCategory = 'course';
+                }
+                return xblockElement.closest('.outline-' + parentCategory);
+            },
+
+            handleDuplicateEvent: function(event) {
+                var self = this,
+                    parentView = this.parentView,
+                    xblockElement = $(event.currentTarget).closest('.outline-item'),
+                    category = XBlockViewUtils.getXBlockType(self.model.get('category'), parentView.model, true),
+                    parentElement = self.parentElement(xblockElement, category),
+                    placeholderElement = self.createPlaceholderElement(xblockElement),
+                    scrollOffset = ViewUtils.getScrollOffset(xblockElement);
+
+                event.preventDefault();
+                XBlockViewUtils.duplicateXBlock(xblockElement, parentElement)
+                    .done(function(data) {
+                        ViewUtils.setScrollOffset(placeholderElement, scrollOffset);
+                        placeholderElement.data('locator', data.locator);
+                        if (parentView) {
+                            parentView.refresh(self, event);
+                        } else {
+                            self.refresh();
+                        }
+                    })
+                    .fail(function() {
+                        // Remove the placeholder if the update failed
+                        placeholderElement.remove();
+                    });
             },
 
             handleAddEvent: function(event) {

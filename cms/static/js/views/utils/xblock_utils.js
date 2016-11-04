@@ -1,9 +1,10 @@
 /**
  * Provides utilities for views to work with xblocks.
  */
-define(['jquery', 'underscore', 'gettext', 'common/js/components/utils/view_utils', 'js/utils/module'],
-    function($, _, gettext, ViewUtils, ModuleUtils) {
-        var addXBlock, deleteXBlock, createUpdateRequestData, updateXBlockField, VisibilityState,
+define(['jquery', 'underscore', 'gettext', 'common/js/components/utils/view_utils', 'js/utils/module',
+        'edx-ui-toolkit/js/utils/string-utils'],
+    function($, _, gettext, ViewUtils, ModuleUtils, StringUtils) {
+        var addXBlock, duplicateXBlock, deleteXBlock, createUpdateRequestData, updateXBlockField, VisibilityState,
             getXBlockVisibilityClass, getXBlockListTypeClass, updateXBlockFields;
 
         /**
@@ -65,6 +66,24 @@ define(['jquery', 'underscore', 'gettext', 'common/js/components/utils/view_util
                 });
         };
 
+        duplicateXBlock = function(xblockElement, parentElement) {
+            return ViewUtils.runOperationShowingMessage(gettext('Duplicating'),
+                function() {
+                    var duplicationOperation = $.Deferred();
+                    $.postJSON(ModuleUtils.getUpdateUrl(),
+                        {
+                            duplicate_source_locator: xblockElement.data('locator'),
+                            parent_locator: parentElement.data('locator')
+                        }, function(data) {
+                            duplicationOperation.resolve(data);
+                        })
+                        .fail(function() {
+                            duplicationOperation.reject();
+                        });
+                    return duplicationOperation.promise();
+                });
+        };
+
         /**
          * Deletes the specified xblock.
          * @param xblockInfo The model for the xblock to be deleted.
@@ -88,39 +107,49 @@ define(['jquery', 'underscore', 'gettext', 'common/js/components/utils/view_util
                 },
                 messageBody;
             xblockType = xblockType || 'component';
-            messageBody = interpolate(
-                    gettext('Deleting this %(xblock_type)s is permanent and cannot be undone.'),
-                    {xblock_type: xblockType},
+            messageBody = StringUtils.interpolate(
+                    gettext('Deleting this {xblock_type} is permanent and cannot be undone.'),
+                    {
+                        xblock_type: xblockType
+                    },
                     true
                 );
 
             if (xblockInfo.get('is_prereq')) {
                 messageBody += ' ' + gettext('Any content that has listed this content as a prerequisite will also have access limitations removed.');   // eslint-disable-line max-len
                 ViewUtils.confirmThenRunOperation(
-                    interpolate(
-                        gettext('Delete this %(xblock_type)s (and prerequisite)?'),
-                        {xblock_type: xblockType},
+                    StringUtils.interpolate(
+                        gettext('Delete this {xblock_type} (and prerequisite)?'),
+                        {
+                            xblock_type: xblockType
+                        },
                         true
                     ),
                     messageBody,
-                    interpolate(
-                        gettext('Yes, delete this %(xblock_type)s'),
-                        {xblock_type: xblockType},
+                    StringUtils.interpolate(
+                        gettext('Yes, delete this {xblock_type}'),
+                        {
+                            xblock_type: xblockType
+                        },
                         true
                     ),
                     operation
                 );
             } else {
                 ViewUtils.confirmThenRunOperation(
-                    interpolate(
-                        gettext('Delete this %(xblock_type)s?'),
-                        {xblock_type: xblockType},
+                    StringUtils.interpolate(
+                        gettext('Delete this {xblock_type}?'),
+                        {
+                            xblock_type: xblockType
+                        },
                         true
                     ),
                     messageBody,
-                    interpolate(
-                        gettext('Yes, delete this %(xblock_type)s'),
-                        {xblock_type: xblockType},
+                    StringUtils.interpolate(
+                        gettext('Yes, delete this {xblock_type}'),
+                        {
+                            xblock_type: xblockType
+                        },
                         true
                     ),
                     operation
@@ -217,6 +246,7 @@ define(['jquery', 'underscore', 'gettext', 'common/js/components/utils/view_util
         return {
             'VisibilityState': VisibilityState,
             'addXBlock': addXBlock,
+            duplicateXBlock: duplicateXBlock,
             'deleteXBlock': deleteXBlock,
             'updateXBlockField': updateXBlockField,
             'getXBlockVisibilityClass': getXBlockVisibilityClass,
