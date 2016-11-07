@@ -248,10 +248,13 @@ def forum_form_discussion(request, course_key):
     else:
         with newrelic.agent.FunctionTrace(nr_transaction, "get_cohort_info"):
             user_cohort_id = get_cohort_id(request.user, course_key)
+        discussion_board_block = course.runtime.construct_ui_block('discussion_board')
+        discussion_board_fragment = discussion_board_block.render('student_view', context=request.GET)
 
         context = {
             'csrf': csrf(request)['csrf_token'],
             'course': course,
+            'fragment': discussion_board_fragment,
             #'recent_active_threads': recent_active_threads,
             'staff_access': bool(has_access(request.user, 'staff', course)),
             'threads': threads,

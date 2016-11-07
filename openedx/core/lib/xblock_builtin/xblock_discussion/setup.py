@@ -21,15 +21,18 @@ def package_data(pkg, root_list):
 
 setup(
     name='xblock-discussion',
-    version='0.1',
+    version='0.2',
     description='XBlock - Discussion',
     install_requires=[
         'XBlock',
     ],
     entry_points={
+        'ui_block.v1': [
+            'discussion_board = xblock_discussion:DiscussionBoardBlock'
+        ],
         'xblock.v1': [
             'discussion = xblock_discussion:DiscussionXBlock'
-        ]
+        ],
     },
     package_data=package_data("xblock_discussion", ["static"]),
 )

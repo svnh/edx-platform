@@ -11,7 +11,7 @@ from xblockutils.resources import ResourceLoader
 from xblockutils.studio_editable import StudioEditableXBlockMixin
 from xmodule.raw_module import RawDescriptor
 
-from xblock.core import XBlock
+from xblock.core import UIBlock, XBlock
 from xblock.fields import Scope, String, UNIQUE_ID
 from xblock.fragment import Fragment
 from xmodule.xml_module import XmlParserMixin
@@ -252,3 +252,44 @@ class DiscussionXBlock(XBlock, StudioEditableXBlockMixin, XmlParserMixin):
         for field_name, value in metadata.iteritems():
             if field_name in block.fields:
                 setattr(block, field_name, value)
+
+
+@XBlock.needs('user')
+@XBlock.needs('i18n')
+class DiscussionBoardBlock(UIBlock):
+    """
+    Provides a UI block that can render the full discussion board.
+    """
+
+    @property
+    def course_key(self):
+        """
+        :return: int course id
+
+        NB: The goal is to move this XBlock out of edx-platform, and so we use
+        scope_ids.usage_id instead of runtime.course_id so that the code will
+        continue to work with workbench-based testing.
+        """
+        return getattr(self.scope_ids.usage_id, 'course_key', None)
+
+    @property
+    def django_user(self):
+        """
+        Returns django user associated with user currently interacting
+        with the XBlock.
+        """
+        user_service = self.runtime.service(self, 'user')
+        if not user_service:
+            return None
+        return user_service._django_user  # pylint: disable=protected-access
+
+    def student_view(self, context=None):
+        """
+        Renders student view for the discussion board.
+        """
+        fragment = Fragment()
+        # fragment.add_content(self.runtime.render_template('discussion/discussion_board.html', context))
+        # fragment.initialize_js('DiscussionInlineBlock')
+        fragment.add_content(u'<p>Hello, world!</p>')
+
+        return fragment

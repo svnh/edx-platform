@@ -1309,7 +1309,7 @@ class MetricsMixin(object):
                 u'action:render',
                 u'action_status:{}'.format(status),
                 u'course_id:{}'.format(course_id),
-                u'block_type:{}'.format(block.scope_ids.block_type),
+                u'block_type:{}'.format(block.block_type),
                 u'block_family:{}'.format(block.entry_point),
             ]
             dog_stats_api.increment(XMODULE_METRIC_NAME, tags=tags, sample_rate=XMODULE_METRIC_SAMPLE_RATE)
