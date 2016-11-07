@@ -73,6 +73,7 @@ class OptionInputTest(unittest.TestCase):
             'value': 'Down',
             'options': [('Up', 'Up'), ('Down', 'Down'), ('Don\'t know', 'Don\'t know')],
             'status': inputtypes.Status('answered'),
+            'has_saved_answers': False,
             'msg': '',
             'inline': False,
             'id': prob_id,
@@ -125,6 +126,7 @@ class ChoiceGroupTest(unittest.TestCase):
             'value': 'foil3',
             'id': 'sky_input',
             'status': 'answered',
+            'has_saved_answers': False,
             'response_data': RESPONSE_DATA
         }
 
@@ -137,6 +139,7 @@ class ChoiceGroupTest(unittest.TestCase):
             'id': 'sky_input',
             'value': 'foil3',
             'status': inputtypes.Status('answered'),
+            'has_saved_answers': False,
             'msg': '',
             'input_type': expected_input_type,
             'choices': [('foil1', '<text>This is foil One.</text>'),
@@ -184,7 +187,8 @@ class JavascriptInputTest(unittest.TestCase):
 
         state = {
             'value': '3',
-            'response_data': RESPONSE_DATA
+            'response_data': RESPONSE_DATA,
+            'has_saved_answers': False,
         }
         the_input = lookup_tag('javascriptinput')(test_capa_system(), element, state)
 
@@ -194,6 +198,7 @@ class JavascriptInputTest(unittest.TestCase):
             'STATIC_URL': '/dummy-static/',
             'id': prob_id,
             'status': inputtypes.Status('unanswered'),
+            'has_saved_answers': False,
             'msg': '',
             'value': '3',
             'params': params,
@@ -220,7 +225,8 @@ class TextLineTest(unittest.TestCase):
 
         state = {
             'value': 'BumbleBee',
-            'response_data': RESPONSE_DATA
+            'response_data': RESPONSE_DATA,
+            'has_saved_answers': False
         }
         the_input = lookup_tag('textline')(test_capa_system(), element, state)
 
@@ -231,6 +237,7 @@ class TextLineTest(unittest.TestCase):
             'id': prob_id,
             'value': 'BumbleBee',
             'status': inputtypes.Status('unanswered'),
+            'has_saved_answers': False,
             'size': size,
             'msg': '',
             'hidden': False,
@@ -256,7 +263,8 @@ class TextLineTest(unittest.TestCase):
 
         state = {
             'value': 'BumbleBee',
-            'response_data': RESPONSE_DATA
+            'response_data': RESPONSE_DATA,
+            'has_saved_answers': False
         }
         the_input = lookup_tag('textline')(test_capa_system(), element, state)
 
@@ -267,6 +275,7 @@ class TextLineTest(unittest.TestCase):
             'id': prob_id,
             'value': 'BumbleBee',
             'status': inputtypes.Status('unanswered'),
+            'has_saved_answers': False,
             'size': size,
             'msg': '',
             'hidden': False,
@@ -304,7 +313,8 @@ class TextLineTest(unittest.TestCase):
 
             state = {
                 'value': 'BumbleBee',
-                'response_data': RESPONSE_DATA
+                'response_data': RESPONSE_DATA,
+                'has_saved_answers': False
             }
             the_input = lookup_tag('textline')(test_capa_system(), element, state)
 
@@ -315,6 +325,7 @@ class TextLineTest(unittest.TestCase):
                 'id': prob_id,
                 'value': 'BumbleBee',
                 'status': inputtypes.Status('unanswered'),
+                'has_saved_answers': False,
                 'size': size,
                 'msg': '',
                 'hidden': False,
@@ -348,6 +359,7 @@ class FileSubmissionTest(unittest.TestCase):
         state = {
             'value': 'BumbleBee.py',
             'status': 'incomplete',
+            'has_saved_answers': False,
             'feedback': {'message': '3'},
             'response_data': RESPONSE_DATA
         }
@@ -360,6 +372,7 @@ class FileSubmissionTest(unittest.TestCase):
             'STATIC_URL': '/dummy-static/',
             'id': prob_id,
             'status': inputtypes.Status('queued'),
+            'has_saved_answers': False,
             'msg': the_input.submitted_msg,
             'value': 'BumbleBee.py',
             'queue_len': '3',
@@ -399,6 +412,7 @@ class CodeInputTest(unittest.TestCase):
         state = {
             'value': 'print "good evening"',
             'status': 'incomplete',
+            'has_saved_answers': False,
             'feedback': {'message': '3'},
             'response_data': RESPONSE_DATA
         }
@@ -413,6 +427,7 @@ class CodeInputTest(unittest.TestCase):
             'id': prob_id,
             'value': 'print "good evening"',
             'status': inputtypes.Status('queued'),
+            'has_saved_answers': False,
             'msg': the_input.submitted_msg,
             'mode': mode,
             'linenumbers': linenumbers,
@@ -460,6 +475,7 @@ class MatlabTest(unittest.TestCase):
             'value': 'print "good evening"',
             'status': 'incomplete',
             'feedback': {'message': '3'},
+            'has_saved_answers': False,
             'response_data': {}
         }
 
@@ -474,6 +490,7 @@ class MatlabTest(unittest.TestCase):
             'id': 'prob_1_2',
             'value': 'print "good evening"',
             'status': inputtypes.Status('queued'),
+            'has_saved_answers': False,
             'msg': self.the_input.submitted_msg,
             'mode': self.mode,
             'rows': self.rows,
@@ -495,6 +512,7 @@ class MatlabTest(unittest.TestCase):
         state = {
             'value': 'print "good evening"',
             'status': 'incomplete',
+            'has_saved_answers': False,
             'input_state': {'queue_msg': 'message'},
             'feedback': {'message': '3'},
             'response_data': RESPONSE_DATA
@@ -509,6 +527,7 @@ class MatlabTest(unittest.TestCase):
             'id': prob_id,
             'value': 'print "good evening"',
             'status': inputtypes.Status('queued'),
+            'has_saved_answers': False,
             'msg': the_input.submitted_msg,
             'mode': self.mode,
             'rows': self.rows,
@@ -531,6 +550,7 @@ class MatlabTest(unittest.TestCase):
             state = {
                 'value': 'print "good evening"',
                 'status': status,
+                'has_saved_answers': False,
                 'input_state': {},
                 'response_data': RESPONSE_DATA
             }
@@ -543,6 +563,7 @@ class MatlabTest(unittest.TestCase):
                 'id': prob_id,
                 'value': 'print "good evening"',
                 'status': inputtypes.Status(status),
+                'has_saved_answers': False,
                 'msg': '',
                 'mode': self.mode,
                 'rows': self.rows,
@@ -565,6 +586,7 @@ class MatlabTest(unittest.TestCase):
         state = {
             'value': 'print "good evening"',
             'status': 'incomplete',
+            'has_saved_answers': False,
             'input_state': {'queuestate': 'queued', 'queuetime': 5},
             'response_data': RESPONSE_DATA
         }
@@ -577,6 +599,7 @@ class MatlabTest(unittest.TestCase):
             'id': prob_id,
             'value': 'print "good evening"',
             'status': inputtypes.Status('queued'),
+            'has_saved_answers': False,
             'msg': the_input.submitted_msg,
             'mode': self.mode,
             'rows': self.rows,
@@ -705,17 +728,14 @@ class MatlabTest(unittest.TestCase):
         self.assertEqual(
             etree.tostring(output),
             textwrap.dedent("""
-            <div>{\'status\': Status(\'queued\'), \'button_enabled\': True,
-            \'rows\': \'10\', \'queue_len\': \'3\', \'mode\': \'\',
-            \'tabsize\': 4, \'cols\': \'80\',
-            \'STATIC_URL\': \'/dummy-static/\', \'linenumbers\': \'true\', \'queue_msg\': \'\',
-            \'value\': \'print "good evening"\',
-            \'msg\': u\'Submitted. As soon as a response is returned,
-            this message will be replaced by that feedback.\',
+            <div>{\'status\': Status(\'queued\'), \'button_enabled\': True, \'queue_len\': \'3\', \'cols\': \'80\',
+            \'STATIC_URL\': \'/dummy-static/\', \'linenumbers\': \'true\', \'id\': \'prob_1_2\',
+            \'describedby_html\': Markup(u\'aria-describedby="status_prob_1_2"\'), \'rows\': \'10\',
+            \'mode\': \'\', \'value\': \'print "good evening"\', \'has_saved_answers\': False,
+            \'queue_msg\': \'\', \'response_data\': {},
+            \'msg\': u\'Submitted. As soon as a response is returned, this message will be replaced by that feedback.\',
             \'matlab_editor_js\': \'/dummy-static/js/vendor/CodeMirror/octave.js\',
-            \'hidden\': \'\', \'id\': \'prob_1_2\',
-            \'describedby_html\': Markup(u\'aria-describedby="status_prob_1_2"\'),
-            \'response_data\': {}}</div>
+            \'hidden\': \'\', \'tabsize\': 4}</div>
             """).replace('\n', ' ').strip()
         )
 
@@ -811,6 +831,7 @@ class MatlabTest(unittest.TestCase):
             'id': prob_id,
             'value': 'print "good evening"',
             'status': inputtypes.Status('queued'),
+            'has_saved_answers': False,
             'msg': self.the_input.submitted_msg,
             'mode': self.mode,
             'rows': self.rows,
@@ -925,6 +946,7 @@ class SchematicTest(unittest.TestCase):
             'id': prob_id,
             'value': value,
             'status': inputtypes.Status('unsubmitted'),
+            'has_saved_answers': False,
             'msg': '',
             'initial_value': initial_value,
             'width': width,
@@ -973,6 +995,7 @@ class ImageInputTest(unittest.TestCase):
             'id': prob_id,
             'value': value,
             'status': inputtypes.Status('unsubmitted'),
+            'has_saved_answers': False,
             'width': width,
             'height': height,
             'src': src,
@@ -1020,6 +1043,7 @@ class CrystallographyTest(unittest.TestCase):
         state = {
             'value': value,
             'status': 'unsubmitted',
+            'has_saved_answers': False,
             'response_data': RESPONSE_DATA
         }
 
@@ -1032,6 +1056,7 @@ class CrystallographyTest(unittest.TestCase):
             'id': prob_id,
             'value': value,
             'status': inputtypes.Status('unsubmitted'),
+            'has_saved_answers': False,
             'msg': '',
             'width': width,
             'height': height,
@@ -1078,6 +1103,7 @@ class VseprTest(unittest.TestCase):
             'id': prob_id,
             'value': value,
             'status': inputtypes.Status('unsubmitted'),
+            'has_saved_answers': False,
             'msg': '',
             'width': width,
             'height': height,
@@ -1116,6 +1142,7 @@ class ChemicalEquationTest(unittest.TestCase):
             'id': prob_id,
             'value': 'H2OYeah',
             'status': inputtypes.Status('unanswered'),
+            'has_saved_answers': False,
             'msg': '',
             'size': self.size,
             'previewer': '/dummy-static/js/capa/chemical_equation_preview.js',
@@ -1209,6 +1236,7 @@ class FormulaEquationTest(unittest.TestCase):
             'id': prob_id,
             'value': 'x^2+1/2',
             'status': inputtypes.Status('unanswered'),
+            'has_saved_answers': False,
             'msg': '',
             'size': self.size,
             'previewer': '/dummy-static/js/capa/src/formula_equation_preview.js',
@@ -1255,6 +1283,7 @@ class FormulaEquationTest(unittest.TestCase):
                 'id': prob_id,
                 'value': 'x^2+1/2',
                 'status': inputtypes.Status('unanswered'),
+                'has_saved_answers': False,
                 'msg': '',
                 'size': size,
                 'previewer': '/dummy-static/js/capa/src/formula_equation_preview.js',
@@ -1360,6 +1389,7 @@ class DragAndDropTest(unittest.TestCase):
         state = {
             'value': value,
             'status': 'unsubmitted',
+            'has_saved_answers': False,
             'response_data': RESPONSE_DATA
         }
 
@@ -1390,6 +1420,7 @@ class DragAndDropTest(unittest.TestCase):
             'id': prob_id,
             'value': value,
             'status': inputtypes.Status('unsubmitted'),
+            'has_saved_answers': False,
             'msg': '',
             'drag_and_drop_json': json.dumps(user_input),
             'response_data': RESPONSE_DATA,
@@ -1431,6 +1462,7 @@ class AnnotationInputTest(unittest.TestCase):
             'value': json_value,
             'id': 'annotation_input',
             'status': 'answered',
+            'has_saved_answers': False,
             'response_data': RESPONSE_DATA
         }
 
@@ -1444,6 +1476,7 @@ class AnnotationInputTest(unittest.TestCase):
             'STATIC_URL': '/dummy-static/',
             'id': prob_id,
             'status': inputtypes.Status('answered'),
+            'has_saved_answers': False,
             'msg': '',
             'title': 'foo',
             'text': 'bar',
@@ -1506,6 +1539,7 @@ class TestChoiceText(unittest.TestCase):
             'value': '{}',
             'id': prob_id,
             'status': inputtypes.Status('answered'),
+            'has_saved_answers': False,
             'response_data': RESPONSE_DATA
         }
 
@@ -1523,6 +1557,7 @@ class TestChoiceText(unittest.TestCase):
             'STATIC_URL': '/dummy-static/',
             'msg': '',
             'input_type': expected_input_type,
+            'has_saved_answers': False,
             'choices': choices,
             'show_correctness': 'always',
             'submitted_message': 'Answer received.',
