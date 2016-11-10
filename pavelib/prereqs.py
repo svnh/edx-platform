@@ -8,7 +8,7 @@ import os
 import re
 import sys
 
-from paver.easy import sh, task
+from paver.easy import sh, task, BuildFailure
 
 from .utils.envs import Env
 from .utils.timer import timed
@@ -132,10 +132,19 @@ def node_prereqs_installation():
     """
     Configures npm and installs Node prerequisites
     """
+    cb_error_text = "cb() never called"
     sh("test `npm config get registry` = \"{reg}\" || "
        "(echo setting registry; npm config set registry"
        " {reg})".format(reg=NPM_REGISTRY))
-    sh('npm install')
+    try:
+        sh('npm install')
+    except BuildFailure, error_message:
+        print error_message
+        if cb_error_text in error_message:
+            print "npm issue; trying again..."
+            sh('npm install')
+        else:
+            raise BuildFailure
 
 
 def python_prereqs_installation():
