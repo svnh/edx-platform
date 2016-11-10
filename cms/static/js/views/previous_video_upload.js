@@ -1,13 +1,19 @@
 define(
-    ['gettext', 'js/utils/date_utils', 'js/views/baseview'],
-    function(gettext, DateUtils, BaseView) {
+    ['underscore', 'gettext', 'js/utils/date_utils', 'js/views/baseview', 'common/js/components/views/feedback_prompt',
+     'common/js/components/views/feedback_notification'],
+    function(_, gettext, DateUtils, BaseView, PromptView, NotificationView) {
         'use strict';
 
         var PreviousVideoUploadView = BaseView.extend({
             tagName: 'tr',
 
-            initialize: function() {
+            events: {
+                'click .remove-video-button.action-button': 'removeVideo'
+            },
+
+            initialize: function(options) {
                 this.template = this.loadTemplate('previous-video-upload');
+                this.videoHandlerUrl = options.videoHandlerUrl;
             },
 
             renderDuration: function(seconds) {
@@ -31,6 +37,47 @@ define(
                     this.template(_.extend({}, this.model.attributes, renderedAttributes))
                 );
                 return this;
+            },
+
+            removeVideo: function(e) {
+                // debugger;
+                var video = this.model,
+                    notification = new NotificationView.Mini({
+                        title: gettext('Removing')
+                    }),
+                    videoView = this;
+
+                if (e && e.preventDefault) {
+                    e.preventDefault();
+                }
+
+                new PromptView.Warning({
+                    title: gettext('Remove Video Confirmation'),
+                    message: gettext('Are you sure you wish to remove this video. It cannot be reversed!'),
+                    actions: {
+                        primary: {
+                            text: gettext('Remove'),
+                            click: function(view) {
+                                view.hide();
+                                notification.show();
+                                $.ajax({
+                                    url: videoView.videoHandlerUrl + '/' + video.get('edx_video_id'),
+                                    type: 'DELETE'
+                                }).done(function() {
+                                    notification.hide();
+                                }).done(function() {
+                                    videoView.remove();
+                                });
+                            }
+                        },
+                        secondary: {
+                            text: gettext('Cancel'),
+                            click: function(view) {
+                                view.hide();
+                            }
+                        }
+                    }
+                }).show();
             }
         });
 
