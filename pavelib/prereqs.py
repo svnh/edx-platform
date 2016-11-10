@@ -8,7 +8,7 @@ import os
 import re
 import sys
 
-from paver.easy import sh, task, BuildFailure
+from paver.easy import sh, task
 
 from .utils.envs import Env
 from .utils.timer import timed
@@ -136,15 +136,14 @@ def node_prereqs_installation():
     sh("test `npm config get registry` = \"{reg}\" || "
        "(echo setting registry; npm config set registry"
        " {reg})".format(reg=NPM_REGISTRY))
-    try:
+
+    # Error handling around a race condition that produces "cb() never called" error. This
+    # ought to disappear when we upgrade npm to 3 or higher. TODO: clean this up when we do that.
+    capture = sh('npm install', capture=True, ignore_error=True)
+    print capture
+    if cb_error_text in capture:
+        print "npm install error detected. Retrying..."
         sh('npm install')
-    except BuildFailure, error_message:
-        print error_message
-        if cb_error_text in error_message:
-            print "npm issue; trying again..."
-            sh('npm install')
-        else:
-            raise BuildFailure
 
 
 def python_prereqs_installation():
