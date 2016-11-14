@@ -238,7 +238,6 @@ class InputTypeBase(object):
                                                                                  msg=HTML(self.msg))
 
         self.status = state.get('status', 'unanswered')
-        self.has_saved_answers = state.get('has_saved_answers', False)
 
         try:
             # Pre-parse and process all the declared requirements.
@@ -323,7 +322,6 @@ class InputTypeBase(object):
             'id': self.input_id,
             'value': self.value,
             'status': Status(self.status, self.capa_system.i18n.ugettext),
-            'has_saved_answers': self.has_saved_answers,
             'msg': self.msg,
             'response_data': self.response_data,
             'STATIC_URL': self.capa_system.STATIC_URL,

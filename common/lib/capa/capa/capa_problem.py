@@ -793,6 +793,10 @@ class LoncapaProblem(object):
             answervariable = None
             if problemid in self.correct_map:
                 pid = input_id
+
+                # if the the problem has not been saved since the last submit set the status to the
+                # current correctness value. Otherwise we do not want to display correctness because the answer
+                # may have changed since the problem was graded.
                 if not self.has_saved_answers:
                     status = self.correct_map.get_correctness(pid)
 

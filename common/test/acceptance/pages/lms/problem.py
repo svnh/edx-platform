@@ -34,6 +34,13 @@ class ProblemPage(PageObject):
         return self.q(css="div.problem p").text
 
     @property
+    def problem_input_content(self):
+        """
+        Return the text of the question of the problem.
+        """
+        return self.q(css="div.wrapper-problem-response").text[0]
+
+    @property
     def problem_content(self):
         """
         Return the content of the problem
@@ -236,6 +243,15 @@ class ProblemPage(PageObject):
         """
         msg = "Wait for status to be {}".format(message)
         self.wait_for_element_visibility(status_selector, msg)
+
+    def is_expected_status_visible(self, status_selector):
+        """
+        check for the expected status indicator to be visible.
+
+        Args:
+            status_selector(str): status selector string.
+        """
+        return self.q(css=status_selector).visible
 
     def wait_success_notification(self):
         """
