@@ -4,6 +4,7 @@
 define(['jquery', 'underscore', 'gettext', 'common/js/components/utils/view_utils', 'js/utils/module',
         'edx-ui-toolkit/js/utils/string-utils'],
     function($, _, gettext, ViewUtils, ModuleUtils, StringUtils) {
+        'use strict';
         var addXBlock, duplicateXBlock, deleteXBlock, createUpdateRequestData, updateXBlockField, VisibilityState,
             getXBlockVisibilityClass, getXBlockListTypeClass, updateXBlockFields;
 
@@ -106,12 +107,10 @@ define(['jquery', 'underscore', 'gettext', 'common/js/components/utils/view_util
                     );
                 },
                 messageBody;
-            xblockType = xblockType || 'component';
+            xblockType = xblockType || 'component'; // eslint-disable-line no-param-reassign
             messageBody = StringUtils.interpolate(
                     gettext('Deleting this {xblock_type} is permanent and cannot be undone.'),
-                    {
-                        xblock_type: xblockType
-                    },
+                    {xblock_type: xblockType},
                     true
                 );
 
@@ -120,17 +119,13 @@ define(['jquery', 'underscore', 'gettext', 'common/js/components/utils/view_util
                 ViewUtils.confirmThenRunOperation(
                     StringUtils.interpolate(
                         gettext('Delete this {xblock_type} (and prerequisite)?'),
-                        {
-                            xblock_type: xblockType
-                        },
+                        {xblock_type: xblockType},
                         true
                     ),
                     messageBody,
                     StringUtils.interpolate(
                         gettext('Yes, delete this {xblock_type}'),
-                        {
-                            xblock_type: xblockType
-                        },
+                        {xblock_type: xblockType},
                         true
                     ),
                     operation
@@ -139,17 +134,13 @@ define(['jquery', 'underscore', 'gettext', 'common/js/components/utils/view_util
                 ViewUtils.confirmThenRunOperation(
                     StringUtils.interpolate(
                         gettext('Delete this {xblock_type}?'),
-                        {
-                            xblock_type: xblockType
-                        },
+                        {xblock_type: xblockType},
                         true
                     ),
                     messageBody,
                     StringUtils.interpolate(
                         gettext('Yes, delete this {xblock_type}'),
-                        {
-                            xblock_type: xblockType
-                        },
+                        {xblock_type: xblockType},
                         true
                     ),
                     operation

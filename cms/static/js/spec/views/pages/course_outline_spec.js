@@ -408,13 +408,13 @@ define(['jquery', 'edx-ui-toolkit/js/utils/spec-helpers/ajax-helpers', 'common/j
 
                     // verify content of request
                     AjaxHelpers.expectJsonRequest(requests, 'POST', '/xblock/', {
-                        'duplicate_source_locator': xblockLocator,
-                        'parent_locator': parentLocator
+                        duplicate_source_locator: xblockLocator,
+                        parent_locator: parentLocator
                     });
 
                     // send the response
                     AjaxHelpers.respondWithJson(requests, {
-                        'locator': 'locator-duplicated-xblock'
+                        locator: 'locator-duplicated-xblock'
                     });
                 };
 
@@ -422,14 +422,14 @@ define(['jquery', 'edx-ui-toolkit/js/utils/spec-helpers/ajax-helpers', 'common/j
                     createCourseOutlinePage(this, mockCourseJSON);
                     expect(outlinePage.$('.list-sections li.outline-section').length).toEqual(1);
                     expect(getItemsOfType('section').length, 1);
-                    duplicateXBlockWithSuccess('mock-section', 'mock-course', 'section', 0)
+                    duplicateXBlockWithSuccess('mock-section', 'mock-course', 'section', 0);
                     expect(getItemHeaders('section').length, 2);
                 });
 
                 it('subsection can be duplicated', function() {
                     createCourseOutlinePage(this, mockCourseJSON);
                     expect(getItemsOfType('subsection').length, 1);
-                    duplicateXBlockWithSuccess('mock-subsection', 'mock-section', 'subsection', 0)
+                    duplicateXBlockWithSuccess('mock-subsection', 'mock-section', 'subsection', 0);
                     expect(getItemHeaders('subsection').length, 2);
                 });
 
@@ -437,23 +437,25 @@ define(['jquery', 'edx-ui-toolkit/js/utils/spec-helpers/ajax-helpers', 'common/j
                     createCourseOutlinePage(this, mockCourseJSON);
                     expandItemsAndVerifyState('subsection');
                     expect(getItemsOfType('unit').length, 1);
-                    duplicateXBlockWithSuccess('mock-unit', 'mock-subsection', 'unit', 0)
+                    duplicateXBlockWithSuccess('mock-unit', 'mock-subsection', 'unit', 0);
                     expect(getItemHeaders('unit').length, 2);
                 });
 
                 it('shows a notification when duplicating', function() {
                     var notificationSpy = EditHelpers.createNotificationSpy();
                     createCourseOutlinePage(this, mockCourseJSON);
-                    getItemHeaders('section').find('.duplicate-button').first().click();;
+                    getItemHeaders('section').find('.duplicate-button').first()
+                        .click();
                     EditHelpers.verifyNotificationShowing(notificationSpy, /Duplicating/);
-                    AjaxHelpers.respondWithJson(requests, {'locator': 'locator-duplicated-xblock'});
+                    AjaxHelpers.respondWithJson(requests, {locator: 'locator-duplicated-xblock'});
                     EditHelpers.verifyNotificationHidden(notificationSpy);
                 });
 
                 it('does not duplicate an xblock upon failure', function() {
                     var notificationSpy = EditHelpers.createNotificationSpy();
                     createCourseOutlinePage(this, mockCourseJSON);
-                    getItemHeaders('section').find('.duplicate-button').first().click();;
+                    getItemHeaders('section').find('.duplicate-button').first()
+                        .click();
                     EditHelpers.verifyNotificationShowing(notificationSpy, /Duplicating/);
                     AjaxHelpers.respondWithError(requests);
                     expect(getItemHeaders('section').length, 2);

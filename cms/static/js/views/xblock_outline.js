@@ -17,6 +17,7 @@ define(['jquery', 'underscore', 'gettext', 'js/views/baseview', 'common/js/compo
         'js/views/utils/xblock_utils', 'js/views/xblock_string_field_editor',
         'edx-ui-toolkit/js/utils/string-utils', 'edx-ui-toolkit/js/utils/html-utils'],
     function($, _, gettext, BaseView, ViewUtils, XBlockViewUtils, XBlockStringFieldEditor, StringUtils, HtmlUtils) {
+        'use strict';
         var XBlockOutlineView = BaseView.extend({
             // takes XBlockInfo as a model
 
@@ -87,13 +88,9 @@ define(['jquery', 'underscore', 'gettext', 'js/views/baseview', 'common/js/compo
                     defaultNewChildName = null,
                     isCollapsed = this.shouldRenderChildren() && !this.shouldExpandChildren();
                 if (childInfo) {
-                    addChildName = StringUtils.interpolate(
-                            gettext('New {component_type}'),
-                            {
-                                component_type: childInfo.display_name
-                            },
-                            true
-                        );
+                    addChildName = StringUtils.interpolate(gettext('New {component_type}'), {
+                        component_type: childInfo.display_name
+                    }, true);
                     defaultNewChildName = childInfo.display_name;
                 }
                 /* globals course */
@@ -345,10 +342,10 @@ define(['jquery', 'underscore', 'gettext', 'js/views/baseview', 'common/js/compo
 
             handleAddEvent: function(event) {
                 var self = this,
-                    target = $(event.currentTarget),
-                    category = target.data('category');
+                    $target = $(event.currentTarget),
+                    category = $target.data('category');
                 event.preventDefault();
-                XBlockViewUtils.addXBlock(target).done(function(locator) {
+                XBlockViewUtils.addXBlock($target).done(function(locator) {
                     self.onChildAdded(locator, category, event);
                 });
             }
