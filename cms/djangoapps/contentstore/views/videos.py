@@ -107,7 +107,7 @@ def videos_handler(request, course_key_string, edx_video_id=None):
     elif request.method == "DELETE":
         # from nose.tools import set_trace; set_trace()
         remove_video_for_course(course_key_string, edx_video_id)
-        return JsonResponse({"edx_video_id": edx_video_id}, status=200)
+        return JsonResponse()
     else:
         return videos_post(course, request)
 

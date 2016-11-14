@@ -1,7 +1,7 @@
 define(
     ['underscore', 'gettext', 'js/utils/date_utils', 'js/views/baseview', 'common/js/components/views/feedback_prompt',
-     'common/js/components/views/feedback_notification'],
-    function(_, gettext, DateUtils, BaseView, PromptView, NotificationView) {
+     'common/js/components/views/feedback_notification', 'common/js/components/utils/view_utils'],
+    function(_, gettext, DateUtils, BaseView, PromptView, NotificationView, ViewUtils) {
         'use strict';
 
         var PreviousVideoUploadView = BaseView.extend({
@@ -39,45 +39,29 @@ define(
                 return this;
             },
 
-            removeVideo: function(e) {
-                // debugger;
-                var video = this.model,
-                    notification = new NotificationView.Mini({
-                        title: gettext('Removing')
-                    }),
-                    videoView = this;
+            removeVideo: function(event) {
+                var videoView = this;
 
-                if (e && e.preventDefault) {
-                    e.preventDefault();
-                }
+                event.preventDefault();
 
-                new PromptView.Warning({
-                    title: gettext('Remove Video Confirmation'),
-                    message: gettext('Are you sure you wish to remove this video. It cannot be reversed!'),
-                    actions: {
-                        primary: {
-                            text: gettext('Remove'),
-                            click: function(view) {
-                                view.hide();
-                                notification.show();
-                                $.ajax({
-                                    url: videoView.videoHandlerUrl + '/' + video.get('edx_video_id'),
+                ViewUtils.confirmThenRunOperation(
+                    gettext('Remove Video Confirmation'),
+                    gettext('Are you sure you wish to remove this video. It cannot be reversed!'),
+                    gettext('Remove'),
+                    function() {
+                        ViewUtils.runOperationShowingMessage(
+                            gettext('Removing'),
+                            function() {
+                                return $.ajax({
+                                    url: videoView.videoHandlerUrl + '/' + videoView.model.get('edx_video_id'),
                                     type: 'DELETE'
-                                }).done(function() {
-                                    notification.hide();
                                 }).done(function() {
                                     videoView.remove();
                                 });
                             }
-                        },
-                        secondary: {
-                            text: gettext('Cancel'),
-                            click: function(view) {
-                                view.hide();
-                            }
-                        }
+                        );
                     }
-                }).show();
+                );
             }
         });
 
