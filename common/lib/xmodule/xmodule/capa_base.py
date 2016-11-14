@@ -679,6 +679,12 @@ class CapaMixin(CapaFields):
         answer_notification_type, answer_notification_message = self._get_answer_notification(
             render_notifications=submit_notification)
 
+        save_message = None
+        if self.has_saved_answers:
+            save_message = _(
+                "Your answers were previously saved. Click '{button_name}' to grade them."
+            ).format(button_name=self.submit_button_name())
+
         context = {
             'problem': content,
             'id': self.location.to_deprecated_string(),
@@ -695,6 +701,8 @@ class CapaMixin(CapaFields):
             'should_enable_next_hint': should_enable_next_hint,
             'answer_notification_type': answer_notification_type,
             'answer_notification_message': answer_notification_message,
+            'has_saved_answers': self.has_saved_answers,
+            'save_message': save_message,
         }
 
         html = self.runtime.render_template('problem.html', context)
