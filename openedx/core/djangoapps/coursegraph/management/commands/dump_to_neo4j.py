@@ -7,18 +7,14 @@ from __future__ import unicode_literals, print_function
 import logging
 
 from django.core.management.base import BaseCommand
-from django.utils import six
+from django.utils import six, timezone
 from opaque_keys.edx.keys import CourseKey
-from py2neo import Graph, Node, Relationship, authenticate
+from py2neo import Graph, Node, Relationship, authenticate, NodeSelector
 from py2neo.compat import integer, string, unicode as neo4j_unicode
 from request_cache.middleware import RequestCache
 from xmodule.modulestore.django import modulestore
 
-from openedx.core.djangoapps.coursegraph.utils import (
-    CommandLastRunCache,
-    CourseLastPublishedCache,
-)
-
+from openedx.core.djangoapps.content.course_structures.models import CourseStructure
 
 log = logging.getLogger(__name__)
 
@@ -28,9 +24,6 @@ bolt_log = logging.getLogger('neo4j.bolt')  # pylint: disable=invalid-name
 bolt_log.setLevel(logging.ERROR)
 
 PRIMITIVE_NEO4J_TYPES = (integer, string, neo4j_unicode, float, bool)
-
-COMMAND_LAST_RUN_CACHE = CommandLastRunCache()
-COURSE_LAST_PUBLISHED_CACHE = CourseLastPublishedCache()
 
 
 class ModuleStoreSerializer(object):
@@ -90,10 +83,13 @@ class ModuleStoreSerializer(object):
 
         label = item.scope_ids.block_type
 
-        # prune some fields
         if label == 'course':
+            # prune the checklists field
             if 'checklists' in fields:
                 del fields['checklists']
+
+            # record the time this command was run
+            fields['time_last_dumped_to_neo4j'] = six.text_type(timezone.now())
 
         return fields, label
 
@@ -168,18 +164,55 @@ class ModuleStoreSerializer(object):
             transaction.create(entity)
 
     @staticmethod
-    def should_dump_course(course_key):
+    def get_command_last_run(course_key, graph):
+        """
+        This information is stored on the course node of a course in neo4j
+        :param course_key: a CourseKey
+        :param graph: a py2neo Graph
+        :return: a string representation of when this course was last dumped to
+         neo4j or None
+        """
+        selector = NodeSelector(graph)
+        course_node = selector.select(
+            "course",
+            course_key=six.text_type(course_key)
+        ).first()
+
+        last_this_command_was_run = None
+        if course_node is not None:
+            last_this_command_was_run = course_node['time_last_dumped_to_neo4j']
+
+        return last_this_command_was_run
+
+    @staticmethod
+    def get_course_last_published(course_key):
+        """
+        We use the CourseStructure table to get when this course was last
+          published.
+        :param course_key: a CourseKey
+        :return: a string representation of when this course was last dumped to
+          neo4j or None
+        """
+        try:
+            structure = CourseStructure.objects.get(course_id=course_key)
+            last_course_had_published_event = six.text_type(structure.modified)
+        except CourseStructure.DoesNotExist:
+            last_course_had_published_event = None
+
+        return last_course_had_published_event
+
+    def should_dump_course(self, course_key, graph):
         """
         Only dump the course if it's been changed since the last time it's been
         dumped.
         :param course_key: a CourseKey object.
+        :param graph: a py2neo Graph object.
         :return: bool. Whether or not this course should be dumped to neo4j.
         """
 
-        last_this_command_was_run = COMMAND_LAST_RUN_CACHE.get(course_key)
-        last_course_had_published_event = COURSE_LAST_PUBLISHED_CACHE.get(
-            course_key
-        )
+        last_this_command_was_run = self.get_command_last_run(course_key, graph)
+
+        last_course_had_published_event = self.get_course_last_published(course_key)
 
         # if we have no record of this course being serialized, serialize it
         if last_this_command_was_run is None:
@@ -206,6 +239,7 @@ class ModuleStoreSerializer(object):
           to neo4j, and one of courses that were not.
         -------
         """
+
         total_number_of_courses = len(self.course_keys)
 
         successful_courses = []
@@ -222,7 +256,7 @@ class ModuleStoreSerializer(object):
                 total_number_of_courses,
             )
 
-            if not (override_cache or self.should_dump_course(course_key)):
+            if not (override_cache or self.should_dump_course(course_key, graph)):
                 log.info("skipping dumping %s, since it hasn't changed", course_key)
                 continue
 
@@ -258,7 +292,6 @@ class ModuleStoreSerializer(object):
                 unsuccessful_courses.append(course_string)
 
             else:
-                COMMAND_LAST_RUN_CACHE.set(course_key)
                 successful_courses.append(course_string)
 
         return successful_courses, unsuccessful_courses
