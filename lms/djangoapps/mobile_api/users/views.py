@@ -259,7 +259,7 @@ class UserCourseEnrollmentsList(generics.ListAPIView):
         * url: URL to the downloadable version of the certificate, if exists.
     """
     queryset = CourseEnrollment.objects.all()
-    serializer_class = CourseEnrollmentSerializer
+    #serializer_class = CourseEnrollmentSerializer
     lookup_field = 'username'
 
     # In Django Rest Framework v3, there is a default pagination
@@ -279,6 +279,9 @@ class UserCourseEnrollmentsList(generics.ListAPIView):
     def get_queryset(self):
         course_ids = set(self.queryset.values_list('course_id', flat=True))
         CourseEnrollmentSerializer.set_course_catalog(self.request.user, course_ids)
+        catalog_course_runs_against_course_keys = CourseEnrollmentSerializer.get_course_catalog_run_cache(
+            self.request.user, course_ids
+        )
 
         enrollments = self.queryset.filter(
             user__username=self.kwargs['username'],
@@ -286,8 +289,16 @@ class UserCourseEnrollmentsList(generics.ListAPIView):
         ).order_by('created').reverse()
         org = self.request.query_params.get('org', None)
 
+        # return [
+        #     enrollment for enrollment in enrollments
+        #     if enrollment.course_overview and self.is_org(org, enrollment.course_overview.org) and
+        #     is_mobile_available_for_user(self.request.user, enrollment.course_overview)
+        # ]
         return [
-            enrollment for enrollment in enrollments
+            CourseEnrollmentSerializer(
+                data=enrollment,
+                context={"catalog_course_run": catalog_course_runs_against_course_keys[enrollment.course_id]}
+            ) for enrollment in enrollments
             if enrollment.course_overview and self.is_org(org, enrollment.course_overview.org) and
             is_mobile_available_for_user(self.request.user, enrollment.course_overview)
         ]
