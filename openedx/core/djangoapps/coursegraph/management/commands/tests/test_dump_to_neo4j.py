@@ -46,16 +46,18 @@ class TestDumpToNeo4jCommandBase(SharedModuleStoreTestCase):
         cls.course_strings = [six.text_type(cls.course.id), six.text_type(cls.course2.id)]
 
     @staticmethod
-    def setup_mock_graph(mock_selector_class, mock_graph_class):
+    def setup_mock_graph(mock_selector_class, mock_graph_class, transaction_errors=False):
         """
         Replaces the py2neo Graph object with a MockGraph; similarly replaces
         NodeSelector with MockNodeSelector.
         :param mock_selector_class: a mocked NodeSelector class
         :param mock_graph_class: a mocked Graph class
+        :param transaction_errors: a bool for whether we should get errors
+          when transactions try to commit
         :return: an instance of MockGraph
         """
 
-        mock_graph = MockGraph()
+        mock_graph = MockGraph(transaction_errors=transaction_errors)
         mock_graph_class.return_value = mock_graph
 
         mock_node_selector = MockNodeSelector(mock_graph)
@@ -271,22 +273,22 @@ class TestModuleStoreSerializer(TestDumpToNeo4jCommandBase):
         self.assertItemsEqual(successful, self.course_strings)
 
     @mock.patch('openedx.core.djangoapps.coursegraph.management.commands.dump_to_neo4j.NodeSelector')
-    @mock.patch('openedx.core.djangoapps.coursegraph.management.commands.dump_to_neo4j.Graph')
-    def _test_dump_to_neo4j_rollback(self, mock_graph_class, mock_selector_class):
+    def test_dump_to_neo4j_rollback(self, mock_selector_class):
         """
         Tests that the the dump_to_neo4j method handles the case where there's
         an exception trying to write to the neo4j database.
         """
-        mock_graph, mock_transaction = self.setup_mock_graph(
-            mock_selector_class, mock_graph_class
-        )
-        mock_transaction.run.side_effect = ValueError('Something went wrong!')
+        mock_graph = MockGraph(transaction_errors=True)
+        mock_selector_class.return_value = MockNodeSelector(mock_graph)
 
         successful, unsuccessful = self.mss.dump_courses_to_neo4j(mock_graph)
 
-        self.assertEqual(mock_graph.begin.call_count, 2)
-        self.assertEqual(mock_transaction.commit.call_count, 0)
-        self.assertEqual(mock_transaction.rollback.call_count, 2)
+        self.assertCourseDump(
+            mock_graph,
+            number_of_courses=0,
+            number_commits=0,
+            number_rollbacks=2,
+        )
 
         self.assertEqual(len(successful), 0)
         self.assertItemsEqual(unsuccessful, self.course_strings)
@@ -294,24 +296,24 @@ class TestModuleStoreSerializer(TestDumpToNeo4jCommandBase):
     @mock.patch('openedx.core.djangoapps.coursegraph.management.commands.dump_to_neo4j.NodeSelector')
     @ddt.data((True, 2), (False, 0))
     @ddt.unpack
-    def test_dump_to_neo4j_cache(self, override_cache, expected_number_courses, mock_selector):
+    def test_dump_to_neo4j_cache(self, override_cache, expected_number_courses, mock_selector_class):
         """
         Tests the caching mechanism and override to make sure we only publish
         recently updated courses.
         """
 
-        graph = MockGraph()
-        mock_selector.return_value = MockNodeSelector(graph)
+        mock_graph = MockGraph()
+        mock_selector_class.return_value = MockNodeSelector(mock_graph)
 
         # run once to warm the cache
         self.mss.dump_courses_to_neo4j(
-            graph, override_cache=override_cache
+            mock_graph, override_cache=override_cache
         )
 
         # when run the second time, only dump courses if the cache override
         # is enabled
         successful, unsuccessful = self.mss.dump_courses_to_neo4j(
-            graph, override_cache=override_cache
+            mock_graph, override_cache=override_cache
         )
         self.assertEqual(len(successful + unsuccessful), expected_number_courses)
 
@@ -345,12 +347,7 @@ class TestModuleStoreSerializer(TestDumpToNeo4jCommandBase):
         (None, None, True),
     )
     @ddt.unpack
-    def test_should_dump_course(
-        self,
-        last_command_run,
-        last_course_published,
-        should_dump,
-    ):
+    def test_should_dump_course(self, last_command_run, last_course_published, should_dump):
         """
         Tests whether a course should be dumped given the last time it was
         dumped and the last time it was published.

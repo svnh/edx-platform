@@ -8,12 +8,15 @@ from py2neo import Node
 
 class MockGraph(object):
     """
-    A stubbed out version of py2neo's Graph object, used for testing
+    A stubbed out version of py2neo's Graph object, used for testing.
+    :param transaction_errors: a bool for whether transactions should throw
+      an error.
     """
-    def __init__(self, **kwargs):
+    def __init__(self, transaction_errors=False, **kwargs):  # pylint: disable=unused-argument
         self.nodes = set()
         self.number_commits = 0
         self.number_rollbacks = 0
+        self.transaction_errors = transaction_errors
 
     def begin(self):
         """
@@ -59,8 +62,11 @@ class MockTransaction(object):
     def commit(self):
         """
         Takes elements in the transaction's temporary storage and adds them
-        to the mock graph's storage.
+        to the mock graph's storage. Throws an error if the graph's
+        transaction_errors param is set to True.
         """
+        if self.graph.transaction_errors:
+            raise Exception("fake exception while trying to commit")
         for element in self.temp:
             self.graph.nodes.add(element)
         self.temp.clear()
