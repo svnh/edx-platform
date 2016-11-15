@@ -14,45 +14,22 @@
  *
  */
 
-(function('dateUtilFactory', define) {
+(function(define) {
     'use strict';
 
     define([
         'jquery',
         'edx-ui-toolkit/js/utils/date-utils',
         'edx-ui-toolkit/js/utils/string-utils'
-    ], function($, DateUtils, StringUtils) {
+    ],
+
+    function($, DateUtils, StringUtils) {
         // var DateUtilFactory;
         var localizedTime;
         var stringHandler;
         var displayDatetime;
         var isValid;
-        var transform;
-
-        transform = function(iterationKey) {
-            var context;
-            $(iterationKey).each(function() {
-                if (isValid($(this).data('datetime'))) {
-                    context = {
-                        datetime: $(this).data('datetime'),
-                        timezone: $(this).data('timezone'),
-                        language: $(this).data('language'),
-                        format: DateUtils.dateFormatEnum[$(this).data('format')]
-                    };
-                    displayDatetime = stringHandler(
-                        localizedTime(context),
-                        $(this).data('string'),
-                        $(this).data('datetoken')
-                    );
-                    $(this).text(displayDatetime);
-                } else {
-                    displayDatetime = stringHandler(
-                        $(this).data('string')
-                    );
-                    $(this).text(displayDatetime);
-                }
-            });
-        };
+        // var transform_date;
 
         localizedTime = function(context) {
             return DateUtils.localize(context);
@@ -86,11 +63,36 @@
                 && candidateVariable !== 'Invalid date'
                 && candidateVariable !== 'None';
         };
-        return {
-            transform: transform,
-            stringHandler: stringHandler
+        return function(iterationKey) {
+            var context;
+            $(iterationKey).each(function() {
+                if (isValid($(this).data('datetime'))) {
+                    context = {
+                        datetime: $(this).data('datetime'),
+                        timezone: $(this).data('timezone'),
+                        language: $(this).data('language'),
+                        format: DateUtils.dateFormatEnum[$(this).data('format')]
+                    };
+                    displayDatetime = stringHandler(
+                        localizedTime(context),
+                        $(this).data('string'),
+                        $(this).data('datetoken')
+                    );
+                    $(this).text(displayDatetime);
+                } else {
+                    displayDatetime = stringHandler(
+                        $(this).data('string')
+                    );
+                    $(this).text(displayDatetime);
+                }
+            });
         };
-        // return DateUtilFactory;
+
+        // return {
+        //     transform_date: transform_date,
+        //     // stringHandler: stringHandler
+        // };
+        // // return DateUtilFactory;
     });
 }).call(this, define || RequireJS.define);
 
