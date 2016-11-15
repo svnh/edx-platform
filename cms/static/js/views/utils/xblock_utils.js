@@ -6,7 +6,7 @@ define(['jquery', 'underscore', 'gettext', 'common/js/components/utils/view_util
     function($, _, gettext, ViewUtils, ModuleUtils, StringUtils) {
         'use strict';
         var addXBlock, duplicateXBlock, deleteXBlock, createUpdateRequestData, updateXBlockField, VisibilityState,
-            getXBlockVisibilityClass, getXBlockListTypeClass, updateXBlockFields;
+            getXBlockVisibilityClass, getXBlockListTypeClass, updateXBlockFields, getXBlockType;
 
         /**
          * Represents the possible visibility states for an xblock:
