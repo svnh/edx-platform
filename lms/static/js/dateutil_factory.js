@@ -14,7 +14,7 @@
  *
  */
 
-(function(define) {
+(function('dateUtilFactory', define) {
     'use strict';
 
     define([
@@ -22,7 +22,7 @@
         'edx-ui-toolkit/js/utils/date-utils',
         'edx-ui-toolkit/js/utils/string-utils'
     ], function($, DateUtils, StringUtils) {
-        var DateUtilFactory;
+        // var DateUtilFactory;
         var localizedTime;
         var stringHandler;
         var displayDatetime;
@@ -86,11 +86,11 @@
                 && candidateVariable !== 'Invalid date'
                 && candidateVariable !== 'None';
         };
-        DateUtilFactory = {
+        return {
             transform: transform,
             stringHandler: stringHandler
         };
-        return DateUtilFactory;
+        // return DateUtilFactory;
     });
 }).call(this, define || RequireJS.define);
 
