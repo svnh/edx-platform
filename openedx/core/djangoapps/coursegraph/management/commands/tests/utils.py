@@ -9,8 +9,9 @@ from py2neo import Node
 class MockGraph(object):
     """
     A stubbed out version of py2neo's Graph object, used for testing.
-    :param transaction_errors: a bool for whether transactions should throw
-      an error.
+    Args:
+        transaction_errors: a bool for whether transactions should throw
+        an error.
     """
     def __init__(self, transaction_errors=False, **kwargs):  # pylint: disable=unused-argument
         self.nodes = set()
@@ -20,7 +21,8 @@ class MockGraph(object):
 
     def begin(self):
         """
-        :return: a MockTransaction object (instead of a py2neo Transaction)
+        A stub of the method that generates transactions
+        Returns: a MockTransaction object (instead of a py2neo Transaction)
         """
         return MockTransaction(self)
 
@@ -38,8 +40,9 @@ class MockTransaction(object):
         Deletes all nodes associated with a course. Normally `run` executes
         an arbitrary query, but in our code, we only use it to delete nodes
         associated with a course.
-        :param query: query string to be executed (in this case, to delete all
-         nodes associated with a course)
+        Args:
+            query: query string to be executed (in this case, to delete all
+            nodes associated with a course)
         """
         start_string = "WHERE n.course_key='"
         start = query.index(start_string) + len(start_string)
@@ -54,7 +57,8 @@ class MockTransaction(object):
     def create(self, element):
         """
         Adds elements to the transaction's temporary backend storage
-        :param element: a py2neo Node object
+        Args:
+            element: a py2neo Node object
         """
         if isinstance(element, Node):
             self.temp.add(element)
@@ -90,9 +94,11 @@ class MockNodeSelector(object):
     def select(self, label, course_key):
         """
         Selects nodes that match a label and course_key
-        :param label: the string of the label we're selecting nodes by
-        :param course_key: the string of the course key we're selecting node by
-        :return: a MockResult of matching nodes
+        Args:
+            label: the string of the label we're selecting nodes by
+            course_key: the string of the course key we're selecting node by
+
+        Returns: a MockResult of matching nodes
         """
         nodes = []
         for node in self.graph.nodes:
@@ -108,7 +114,7 @@ class MockNodeSelection(list):
     """
     def first(self):
         """
-        :return: the first element of a list if the list has elements.
-        Otherwise, None.
+        Returns: the first element of a list if the list has elements.
+            Otherwise, None.
         """
         return self[0] if self else None

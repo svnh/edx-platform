@@ -50,11 +50,14 @@ class TestDumpToNeo4jCommandBase(SharedModuleStoreTestCase):
         """
         Replaces the py2neo Graph object with a MockGraph; similarly replaces
         NodeSelector with MockNodeSelector.
-        :param mock_selector_class: a mocked NodeSelector class
-        :param mock_graph_class: a mocked Graph class
-        :param transaction_errors: a bool for whether we should get errors
-          when transactions try to commit
-        :return: an instance of MockGraph
+
+        Args:
+            mock_selector_class: a mocked NodeSelector class
+            mock_graph_class: a mocked Graph class
+            transaction_errors: a bool for whether we should get errors
+                when transactions try to commit
+
+        Returns: an instance of MockGraph
         """
 
         mock_graph = MockGraph(transaction_errors=transaction_errors)
@@ -68,11 +71,11 @@ class TestDumpToNeo4jCommandBase(SharedModuleStoreTestCase):
         """
         Asserts that we have the expected number of courses, commits, and
         rollbacks after we dump the modulestore to neo4j
-        :param mock_graph: a MockGraph backend
-        :param number_of_courses: number of courses we expect to find
-        :param number_commits: number of commits we expect against the graph
-        :param number_rollbacks: number of commit rollbacks we expect
-        :return:
+        Args:
+            mock_graph: a MockGraph backend
+            number_of_courses: number of courses we expect to find
+            number_commits: number of commits we expect against the graph
+            number_rollbacks: number of commit rollbacks we expect
         """
         courses = set([node['course_key'] for node in mock_graph.nodes])
         self.assertEqual(len(courses), number_of_courses)
@@ -301,7 +304,6 @@ class TestModuleStoreSerializer(TestDumpToNeo4jCommandBase):
         Tests the caching mechanism and override to make sure we only publish
         recently updated courses.
         """
-
         mock_graph = MockGraph()
         mock_selector_class.return_value = MockNodeSelector(mock_graph)
 
