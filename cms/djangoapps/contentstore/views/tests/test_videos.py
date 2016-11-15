@@ -45,10 +45,10 @@ class VideoUploadTestMixin(object):
         }
         self.course2.save()
         self.store.update_item(self.course2, self.user.id)
-        
+
         # course ids for videos
         course_ids = [unicode(self.course.id), unicode(self.course2.id)]
-        
+
         self.profiles = ["profile1", "profile2"]
         self.previous_uploads = [
             {
