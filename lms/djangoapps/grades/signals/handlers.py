@@ -135,7 +135,7 @@ def enqueue_subsection_update(sender, **kwargs):  # pylint: disable=unused-argum
     )
     log.info(
         u'Grades: Request async calculation of subsection grades. '
-        u'user_id:{} course_key:{} usage_key:{}, Task id: {}'.format(
+        u'user_id:{}, course_key:{}, usage_key:{}, Task id: {}'.format(
             kwargs['user_id'],
             kwargs['course_id'],
             kwargs['usage_id'],
