@@ -134,11 +134,12 @@ def enqueue_subsection_update(sender, **kwargs):  # pylint: disable=unused-argum
         )
     )
     log.info(
-        u'Task: {}. Begin async calculation of subsection grades for {} in {} / {}'.format(
-            result.id,
+        u'Grades: Request async calculation of subsection grades. '
+        u'user_id:{} course_key:{} usage_key:{}, Task id: {}'.format(
             kwargs['user_id'],
             kwargs['course_id'],
             kwargs['usage_id'],
+            getattr(result, 'id', 'N/A'),
         )
     )
 
