@@ -61,7 +61,7 @@
     % if show_correctness == "never" and (value or status not in ['unsubmitted']):
     <div class="capa_alert">${submitted_message}</div>
     %endif
-    % if msg:
+    % if msg and status.classname != 'unanswered':
     <span class="message" aria-describedby="${id}-legend" tabindex="-1">${HTML(msg)}</span>
     % endif
 </div>
