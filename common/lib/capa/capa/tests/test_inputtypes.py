@@ -184,7 +184,7 @@ class JavascriptInputTest(unittest.TestCase):
 
         state = {
             'value': '3',
-            'response_data': RESPONSE_DATA,
+            'response_data': RESPONSE_DATA
         }
         the_input = lookup_tag('javascriptinput')(test_capa_system(), element, state)
 
@@ -220,7 +220,7 @@ class TextLineTest(unittest.TestCase):
 
         state = {
             'value': 'BumbleBee',
-            'response_data': RESPONSE_DATA,
+            'response_data': RESPONSE_DATA
         }
         the_input = lookup_tag('textline')(test_capa_system(), element, state)
 
@@ -256,7 +256,7 @@ class TextLineTest(unittest.TestCase):
 
         state = {
             'value': 'BumbleBee',
-            'response_data': RESPONSE_DATA,
+            'response_data': RESPONSE_DATA
         }
         the_input = lookup_tag('textline')(test_capa_system(), element, state)
 
@@ -304,7 +304,7 @@ class TextLineTest(unittest.TestCase):
 
             state = {
                 'value': 'BumbleBee',
-                'response_data': RESPONSE_DATA,
+                'response_data': RESPONSE_DATA
             }
             the_input = lookup_tag('textline')(test_capa_system(), element, state)
 

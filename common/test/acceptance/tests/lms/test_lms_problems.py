@@ -252,7 +252,13 @@ class ProblemSaveStatusUpdateTests(ProblemsTest):
 
     def test_status_removed_after_save_before_submit(self):
         """
-        Verifies that the status on a problem is removed after a save and before a second submission
+        Scenario: User should see the status removed when saving after submitting an answer and reloading the page.
+        Given that I have loaded the problem page
+        And a choice has been selected and submitted
+        When I change the choice
+        And Save the problem
+        And reload the problem page
+        Then I should see the save notification and I should not see any indication of problem status
         """
         self.courseware_page.visit()
         problem_page = ProblemPage(self.browser)
