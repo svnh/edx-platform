@@ -15,7 +15,7 @@
  */
 
 (function(define) {
-    'use strict';
+    // 'use strict';
 
     define([
         'jquery',
@@ -96,3 +96,6 @@
     });
 }).call(this, define || RequireJS.define);
 
+// function DateUtilFactory (iterationKey) {
+//
+// }
