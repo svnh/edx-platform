@@ -129,7 +129,7 @@ class LoncapaProblem(object):
     Main class for capa Problems.
     """
     def __init__(self, problem_text, id, capa_system, capa_module,  # pylint: disable=redefined-builtin
-                 state=None, seed=None):
+                 state=None, seed=None, extract_html=True):
         """
         Initializes capa Problem.
 
@@ -207,7 +207,8 @@ class LoncapaProblem(object):
             if hasattr(response, 'late_transforms'):
                 response.late_transforms(self)
 
-        self.extracted_tree = self._extract_html(self.tree)
+        if extract_html:
+            self.extracted_tree = self._extract_html(self.tree)
 
     def make_xml_compatible(self, tree):
         """
