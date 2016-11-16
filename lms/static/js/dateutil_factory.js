@@ -94,8 +94,4 @@
         // };
         // // return DateUtilFactory;
     });
-}).call(this, define || RequireJS.define);
-
-// function DateUtilFactory (iterationKey) {
-//
-// }
+})(define || RequireJS.define);
